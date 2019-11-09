@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <!-- 第一步：导入Vue包 -->
+    <script src="./lib/vue-2.4.0.js"></script>
+</head>
+<body>
+    <!-- 第二步：创建一个要控制的区域 -->
+    <div id="app">
+        <!-- 第四步：编写具体代码 -->
+        <h4>{{ msg }}</h4>
+        <input type="button" value="唱起来~" @click="sing">
+        <input type="button" value="停！" @click="stop">
+    </div>
+    <!-- 第三步：定义一个vue实例-->
+    <script>
+      //注意：
+      // 1.在vm实例中，想要获取data上的数据，
+      // 或者调用methods中的方法，必须通过this.属性名或
+      // this.方法名来访问，这里的this，就表示我们new出来
+      // 的VM实例。
+      // 2.VM实例会自动监听其data中所有数据的改变，
+      // 一旦发生变化，立即更新，同步到页面中。程序员只需要关心数据，
+      // 不需要考虑如何重新渲染页面。
+      var vm = new Vue({
+        el:'#app',
+        data:{
+            msg:'大山滴子孙~呦！~~~~~爱太阳~咯~~~~',
+            intervalId:null //在data上定义intervalID
+        },
+        methods:{
+            sing(){//es6写法
+                // 判断intervalID是否为null
+                // 第一种方法：这种方法点击完唱起来按钮后再点击停止按钮
+                // 会出现一个问题——唱起来按钮失效了，点击它文字不会再动
+                // 起来，因为点击按钮后，虽然定时器被停止了，但是intervalId
+                // 没有初始化回null，每次都会进入这个if语句，永远不能再
+                // 开启定时器，因此，没次点击停止按钮后，
+                // 都要吧this.intervalId重新赋值为null！
+                if(this.intervalId != null) return; 
+                // 使用es6语法中的箭头函数来写
+                this.intervalId = setInterval(() => {
+                //获取字符串开头的第一个字符
+                var start = this.msg.substring(0,1)
+                //获取字符串除开头第一个字符外的其他字符
+                var end = this.msg.substring(1)
+                //重新拼接得到新的字符串，并赋值给this.msg
+                this.msg = end+start
+                },400)                
+                // 原来的写法
+                // var _this = this
+                // setInterval(function(){
+                // //获取字符串开头的第一个字符
+                // var start = this.msg.substring(0,1)
+                // //获取字符串除开头第一个字符外的其他字符
+                // var end = this.msg.substring(1)
+                // //重新拼接得到新的字符串，并赋值给this.msg
+                // this.msg = end+start
+                // },400)   
+            },
+            stop(){//停止定时器
+                clearInterval(this.intervalId)
+                this.intervalId = null
+            }
+        }
+    })  
+      //代码步骤分析
+      // 一、让代码动起来
+      // 1.给（唱起来~）按钮绑定一个点击事件 指令：v-on  @
+      // 2.在按钮的事件处理函数中，写相关的业务逻辑代码：
+      // 拿到msg字符串，然后对字符串进行操作，substring
+      // 来进行对字符串的截取操作把第一个字符串截取，放到最后。
+      // 3.为了实现点击一下按钮，自动截取的功能，需要把2中的代码
+      // 放到一个定时器中去。
+      // 二、让代码停止
+      // 思路：利用setInterval返回的intervalID来停止定时器。但是
+      // 由于外部的函数不能获取到setInterval函数中的数据，所以我们要把
+      // IntervalID的值获取后放入到data中。
+      // 1.在data中定义一个变量来存放intervalID，初始默认值为null。
+      // 2.为（停！）按钮绑定一个点击事件 指令：v-on  @
+      // 遇到的问题：每点一次唱起来按钮，都会开启一个定时器，我们要在开启
+      // 定时器之前做一个判断，如果intervalId不为null，说明已经开启了一
+      // 个定时器，不必再新开启，如果intervalId为null，则开启定时器。
+    </script>  
+</body>
+</html>
